@@ -1,0 +1,5 @@
+com\gcg\inventoryservice\controller\InventoryController.class
+com\gcg\inventoryservice\service\InventoryService.class
+com\gcg\inventoryservice\repository\InventoryRepository.class
+com\gcg\inventoryservice\entity\Inventory.class
+com\gcg\inventoryservice\InventoryServiceApplication.class

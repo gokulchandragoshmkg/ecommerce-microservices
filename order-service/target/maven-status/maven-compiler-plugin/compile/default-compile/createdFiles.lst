@@ -1,0 +1,8 @@
+com\gcg\orderservice\entity\Order.class
+com\gcg\orderservice\controller\OrderRequest.class
+com\gcg\orderservice\client\InventoryResponse.class
+com\gcg\orderservice\controller\OrderController.class
+com\gcg\orderservice\service\OrderService.class
+com\gcg\orderservice\client\InventoryClient.class
+com\gcg\orderservice\repository\OrderRepository.class
+com\gcg\orderservice\OrderServiceApplication.class

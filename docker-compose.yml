@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  config-service:
+    image: ecommerce/config-service:0.0.1-SNAPSHOT
+    ports:
+      - "8071:8071"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8071/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  eureka-service:
+    image: ecommerce/eureka-service:0.0.1-SNAPSHOT
+    ports:
+      - "8070:8070"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8070/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+
+  inventory-service:
+    image: ecommerce/inventory-service:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
+
+  order-service:
+    image: ecommerce/order-service:0.0.1-SNAPSHOT
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
+
+  payment-service:
+    image: ecommerce/payment-service:0.0.1-SNAPSHOT
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
+
+  notification-service:
+    image: ecommerce/notification-service:0.0.1-SNAPSHOT
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
