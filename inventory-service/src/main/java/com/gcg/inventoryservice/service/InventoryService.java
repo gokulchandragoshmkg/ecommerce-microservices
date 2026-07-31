@@ -13,12 +13,12 @@ public class InventoryService {
 	private InventoryRepository inventoryRepository;
 	
 	public Inventory getStock(String productId) {
-		return inventoryRepository.findById(productId).get();
+		return inventoryRepository.findByProductId(productId);
 	}
 	
 	
 	public void saveOrder(String productId, int quantity) {
-		Inventory inventory = inventoryRepository.findById(productId).get();
+		Inventory inventory = inventoryRepository.findByProductId(productId);
 		if( inventory.getAvailableQuantity() >= quantity) {
 			inventory.setAvailableQuantity(inventory.getAvailableQuantity() - quantity);
 	        inventory.setReservedQuantity(inventory.getReservedQuantity() + quantity);

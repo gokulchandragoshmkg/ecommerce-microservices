@@ -1,0 +1,70 @@
+# =========================================================================
+# Spring Boot Build Outputs
+# =========================================================================
+# Maven build directory (This completely handles target and metadata)
+target/
+*.jar
+*.war
+*.ear
+*.class
+
+# Gradle build directory
+build/
+.gradle/
+/out/
+
+# =========================================================================
+# Local Configurations & Secrets (NEVER commit these)
+# =========================================================================
+.env
+*.properties.local
+*.yml.local
+*.yaml.local
+
+# =========================================================================
+# Logging & Runtime
+# =========================================================================
+*.log
+logs/
+run/
+
+# =========================================================================
+# IDE Settings (IntelliJ IDEA, Eclipse, VS Code)
+# =========================================================================
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse / Spring Tool Suite (STS)
+.metadata/
+.classpath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+.factorypath
+bin/
+
+# Visual Studio Code
+.vscode/
+
+# =========================================================================
+# Build Tools & Wrappers
+# =========================================================================
+!mvnw
+!mvnw.cmd
+!.mvn/wrapper/maven-wrapper.jar
+
+!gradlew
+!gradlew.bat
+!/gradle/wrapper/gradle-wrapper.jar
+
+# =========================================================================
+# OS Operating System Files
+# =========================================================================
+.DS_Store
+Thumbs.db
+Desktop.ini

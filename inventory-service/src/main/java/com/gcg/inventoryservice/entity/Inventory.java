@@ -1,6 +1,8 @@
 package com.gcg.inventoryservice.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -9,22 +11,24 @@ import jakarta.persistence.Table;
 public class Inventory {
 	
 	@Id
-	private String productId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String productName;
+    private String productId;
     private int availableQuantity;
     private int reservedQuantity;
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getProductId() {
 		return productId;
 	}
 	public void setProductId(String productId) {
 		this.productId = productId;
-	}
-	public String getProductName() {
-		return productName;
-	}
-	public void setProductName(String productName) {
-		this.productName = productName;
 	}
 	public int getAvailableQuantity() {
 		return availableQuantity;
@@ -38,5 +42,6 @@ public class Inventory {
 	public void setReservedQuantity(int reservedQuantity) {
 		this.reservedQuantity = reservedQuantity;
 	}
+	
     
 }
