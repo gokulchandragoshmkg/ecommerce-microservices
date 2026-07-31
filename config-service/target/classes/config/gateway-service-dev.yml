@@ -1,0 +1,50 @@
+server:
+  port: 8072
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/v1/orderservice/**
+
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path=/v1/inventoryservice/**
+
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/v1/paymentservice/**
+
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/v1/notificationservice/**
+
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/v1/authservice/**
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://eureka-service:8070/eureka/
+
+management:
+ endpoints:
+  web:
+   exposure:
+    include: "*"

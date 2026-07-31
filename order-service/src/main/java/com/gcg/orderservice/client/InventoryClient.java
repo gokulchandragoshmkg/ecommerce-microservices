@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "inventory-service")
 public interface InventoryClient {
 	
-	@GetMapping("v1/inventory/{productId}")
+	@GetMapping("v1/inventoryservice/{productId}")
 	InventoryResponse getStock(@PathVariable String productId);
 	
-	@PutMapping("v1/inventory/{productId}/reserve")
+	@PutMapping("v1/inventoryservice/{productId}/reserve")
 	String reserveStock(@PathVariable String productId, @RequestParam int quantity);
 }

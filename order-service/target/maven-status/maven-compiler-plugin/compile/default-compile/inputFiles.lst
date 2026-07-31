@@ -1,8 +1,0 @@
-D:\Git\ecommerce-microservices\order-service\src\main\java\com\gcg\orderservice\client\InventoryClient.java
-D:\Git\ecommerce-microservices\order-service\src\main\java\com\gcg\orderservice\client\InventoryResponse.java
-D:\Git\ecommerce-microservices\order-service\src\main\java\com\gcg\orderservice\controller\OrderController.java
-D:\Git\ecommerce-microservices\order-service\src\main\java\com\gcg\orderservice\controller\OrderRequest.java
-D:\Git\ecommerce-microservices\order-service\src\main\java\com\gcg\orderservice\entity\Order.java
-D:\Git\ecommerce-microservices\order-service\src\main\java\com\gcg\orderservice\OrderServiceApplication.java
-D:\Git\ecommerce-microservices\order-service\src\main\java\com\gcg\orderservice\repository\OrderRepository.java
-D:\Git\ecommerce-microservices\order-service\src\main\java\com\gcg\orderservice\service\OrderService.java

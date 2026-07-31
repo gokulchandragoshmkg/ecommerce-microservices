@@ -13,7 +13,7 @@ import com.gcg.inventoryservice.entity.Inventory;
 import com.gcg.inventoryservice.service.InventoryService;
 
 @RestController
-@RequestMapping("v1/inventory")
+@RequestMapping(value = "/v1/inventoryservice")
 public class InventoryController {
 
 	@Autowired
