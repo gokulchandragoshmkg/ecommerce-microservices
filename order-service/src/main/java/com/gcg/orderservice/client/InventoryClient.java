@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface InventoryClient {
 	
 	@GetMapping("v1/inventoryservice/{productId}")
-	InventoryResponse getStock(@PathVariable String productId);
+	InventoryResponse getStock(@PathVariable Long productId);
 	
 	@PutMapping("v1/inventoryservice/{productId}/reserve")
-	String reserveStock(@PathVariable String productId, @RequestParam int quantity);
+	String reserveStock(@PathVariable Long productId, @RequestParam int quantity);
 }

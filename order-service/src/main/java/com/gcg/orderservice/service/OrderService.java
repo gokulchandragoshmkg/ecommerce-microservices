@@ -1,36 +1,41 @@
 package com.gcg.orderservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.gcg.orderservice.client.InventoryClient;
 import com.gcg.orderservice.client.InventoryResponse;
 import com.gcg.orderservice.entity.Order;
+import com.gcg.orderservice.event.OrderCreatedEvent;
 import com.gcg.orderservice.repository.OrderRepository;
 
 @Service
 public class OrderService {
-	
+
 	@Autowired
 	private OrderRepository orderRepository;
-	
+
 	@Autowired
 	private InventoryClient inventoryClient;
-	
-	public Order placeOrder(String productId, int quantity) {
-		InventoryResponse stock = inventoryClient.getStock(productId);
 
-        Order order = new Order();
-        order.setProductId(productId);
-        order.setQuantity(quantity);
+	@Autowired
+	private KafkaTemplate<String, OrderCreatedEvent> kafkaTemplate;
 
-        if (stock.getAvailableQuantity() >= quantity) {
-            inventoryClient.reserveStock(productId, quantity);
-            order.setStatus("CONFIRMED");
-        } else {
-            order.setStatus("CANCELLED");
-        }
+	public Order placeOrder(Long productId, int quantity) {
+		Order order = new Order();
+		order.setProductId(productId);
+		order.setQuantity(quantity);
+		order.setStatus("PENDING");
+		Order saved = orderRepository.save(order);
 
-        return orderRepository.save(order);
+		OrderCreatedEvent event = new OrderCreatedEvent();
+		event.setOrderId(saved.getId());
+		event.setProductId(productId);
+		event.setQuantity(quantity);
+
+		kafkaTemplate.send("order-created", event);
+
+		return saved;
 	}
 }

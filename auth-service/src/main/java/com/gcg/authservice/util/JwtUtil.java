@@ -2,6 +2,10 @@ package com.gcg.authservice.util;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -21,5 +25,10 @@ public class JwtUtil {
                 .expiration(new Date(System.currentTimeMillis() + 3600_000)) // 1 hour
                 .signWith(secretKey)
                 .compact();
+    }
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

@@ -2,44 +2,42 @@ version: '3.8'
 
 services:
   auth-service:
-   image: ecommerce/auth-service:0.0.1-SNAPSHOT
-   ports:
-     - "8073:8073"
-   healthcheck:
-     test: ["CMD", "wget", "--spider", "-q", "http://localhost:8073/actuator/health"]
-     interval: 5s
-     timeout: 3s
-     retries: 10
-     start_period: 20s
-   environment:
-     SPRING_PROFILES_ACTIVE: "dev"
-     SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
-   depends_on:
-     config-service:
-      condition: service_healthy
-     eureka-service:
-      condition: service_healthy
-     gateway-service:
-      condition: service_healthy
+    image: ecommerce/auth-service:0.0.1-SNAPSHOT
+    ports:
+      - "8073:8073"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8073/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
 
   gateway-service:
-   image: ecommerce/gateway-service:0.0.1-SNAPSHOT
-   ports:
-     - "8072:8072"
-   healthcheck:
-     test: ["CMD", "wget", "--spider", "-q", "http://localhost:8072/actuator/health"]
-     interval: 5s
-     timeout: 3s
-     retries: 10
-     start_period: 20s
-   environment:
-     SPRING_PROFILES_ACTIVE: "dev"
-     SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
-   depends_on:
-     config-service:
-      condition: service_healthy
-     eureka-service:
-      condition: service_healthy
+    image: ecommerce/gateway-service:0.0.1-SNAPSHOT
+    ports:
+      - "8072:8072"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8072/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
 
   config-service:
     image: ecommerce/config-service:0.0.1-SNAPSHOT
@@ -136,3 +134,26 @@ services:
         condition: service_healthy
       auth-service:
         condition: service_healthy
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1

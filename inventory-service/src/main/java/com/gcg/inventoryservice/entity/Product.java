@@ -1,6 +1,6 @@
 package com.gcg.inventoryservice.entity;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "products")
-public class product {
+public class Product {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,8 +18,8 @@ public class product {
 	
 	private String productName;
 	private String description;
-	private Date createdOn;
-	private Date updatedOn;
+	private LocalDateTime createdOn;
+	private LocalDateTime updatedOn;
 	private String productImage;
 	
 	public Long getId() {
@@ -40,16 +40,16 @@ public class product {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Date getCreatedOn() {
+	public LocalDateTime getCreatedOn() {
 		return createdOn;
 	}
-	public void setCreatedOn(Date createdOn) {
+	public void setCreatedOn(LocalDateTime createdOn) {
 		this.createdOn = createdOn;
 	}
-	public Date getUpdatedOn() {
+	public LocalDateTime getUpdatedOn() {
 		return updatedOn;
 	}
-	public void setUpdatedOn(Date updatedOn) {
+	public void setUpdatedOn(LocalDateTime updatedOn) {
 		this.updatedOn = updatedOn;
 	}
 	public String getProductImage() {
