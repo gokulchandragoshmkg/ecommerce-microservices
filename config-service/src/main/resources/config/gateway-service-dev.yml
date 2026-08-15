@@ -13,22 +13,42 @@ spring:
           uri: lb://order-service
           predicates:
             - Path=/v1/orderservice/**
+          filters:
+            - name: CircuitBreaker
+              args:
+               name: orderServiceCB
+               fallbackUri: forward:/fallback/order
+
         - id: inventory-service
           uri: lb://inventory-service
           predicates:
             - Path=/v1/inventoryservice/**
+          filters:
+            - name: CircuitBreaker
+              args:
+               name: inventoryServiceCB
+               fallbackUri: forward:/fallback/inventory
+
         - id: payment-service
           uri: lb://payment-service
           predicates:
             - Path=/v1/paymentservice/**
+          filters:
+            - name: CircuitBreaker
+              args:
+               name: paymentServiceCB
+               fallbackUri: forward:/fallback/payment
+
         - id: notification-service
           uri: lb://notification-service
           predicates:
             - Path=/v1/notificationservice/**
+
         - id: auth-service
           uri: lb://auth-service
           predicates:
             - Path=/v1/authservice/**
+
       globalcors:
         cors-configurations:
           '[/**]':
@@ -55,3 +75,12 @@ management:
     web:
       exposure:
         include: "*"
+
+resilience4j:
+  circuitbreaker:
+   configs:
+     default:
+       slidingWindowSize: 10
+       failureRateThreshold: 50
+       waitDurationInOpenState: 10s
+       permittedNumberOfCallsInHalfOpenState: 3

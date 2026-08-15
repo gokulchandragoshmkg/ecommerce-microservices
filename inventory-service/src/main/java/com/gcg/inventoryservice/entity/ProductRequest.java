@@ -5,6 +5,24 @@ public class ProductRequest {
 	private String productName;
 	private int quantity;
 	private String description;
+	private float discountPrice;
+	private float price;
+	
+	public float getDiscountPrice() {
+		return discountPrice;
+	}
+
+	public void setDiscountPrice(float discountPrice) {
+		this.discountPrice = discountPrice;
+	}
+
+	public float getPrice() {
+		return price;
+	}
+
+	public void setPrice(float price) {
+		this.price = price;
+	}
 
 	public String getDescription() {
 		return description;

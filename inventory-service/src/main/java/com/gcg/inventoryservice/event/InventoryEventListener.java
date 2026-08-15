@@ -19,7 +19,7 @@ public class InventoryEventListener {
 	@KafkaListener(topics = "order-created", groupId = "inventory-service")
 	public void handleOrderCreated(OrderCreatedEvent event) {
 		boolean reserved = inventoryService.tryReserveStock(event.getProductId(), event.getQuantity());
-
+		System.out.println("reserved :" +reserved);
 		if (reserved) {
 			StockReservedEvent success = new StockReservedEvent();
 			success.setOrderId(event.getOrderId());

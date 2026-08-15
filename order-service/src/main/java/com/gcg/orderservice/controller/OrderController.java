@@ -20,8 +20,15 @@ public class OrderController {
 	@Autowired
 	OrderService orderService;
 	
-	@PostMapping
+	@PostMapping("/createOrder")
 	public ResponseEntity<Order> createOrder(@RequestBody OrderRequest orderRequest  ) {
 		return ResponseEntity.ok(orderService.placeOrder(orderRequest.getProductId(), orderRequest.getQuantity()));
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<Order> getOrder(@PathVariable Long id) {
+	    return orderService.getOrderById(id)
+	            .map(ResponseEntity::ok)
+	            .orElse(ResponseEntity.notFound().build());
 	}
 }

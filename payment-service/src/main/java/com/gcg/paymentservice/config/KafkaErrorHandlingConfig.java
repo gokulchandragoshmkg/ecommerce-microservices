@@ -1,0 +1,22 @@
+package com.gcg.paymentservice.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
+import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.util.backoff.FixedBackOff;
+
+@Configuration
+public class KafkaErrorHandlingConfig {
+
+    @Bean
+    public DefaultErrorHandler errorHandler(KafkaTemplate<Object, Object> template) {
+        DeadLetterPublishingRecoverer recoverer =
+                new DeadLetterPublishingRecoverer(template);
+
+        // retry 3 times, 1 second apart, then send to dead-letter topic
+        DefaultErrorHandler handler = new DefaultErrorHandler(recoverer, new FixedBackOff(1000L, 3));
+        return handler;
+    }
+}

@@ -18,10 +18,24 @@ public class Product {
 	
 	private String productName;
 	private String description;
+	private float discountPrice;
+	private float price;
 	private LocalDateTime createdOn;
 	private LocalDateTime updatedOn;
 	private String productImage;
 	
+	public float getDiscountPrice() {
+		return discountPrice;
+	}
+	public void setDiscountPrice(float discountPrice) {
+		this.discountPrice = discountPrice;
+	}
+	public float getPrice() {
+		return price;
+	}
+	public void setPrice(float price) {
+		this.price = price;
+	}
 	public Long getId() {
 		return id;
 	}

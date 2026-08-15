@@ -1,11 +1,12 @@
 package com.gcg.orderservice.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.gcg.orderservice.client.InventoryClient;
-import com.gcg.orderservice.client.InventoryResponse;
 import com.gcg.orderservice.entity.Order;
 import com.gcg.orderservice.event.OrderCreatedEvent;
 import com.gcg.orderservice.repository.OrderRepository;
@@ -37,5 +38,9 @@ public class OrderService {
 		kafkaTemplate.send("order-created", event);
 
 		return saved;
+	}
+	
+	public Optional<Order> getOrderById(Long id) {
+	    return orderRepository.findById(id);
 	}
 }

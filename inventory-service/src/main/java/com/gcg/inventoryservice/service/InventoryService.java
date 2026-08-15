@@ -1,9 +1,10 @@
 package com.gcg.inventoryservice.service;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.gcg.inventoryservice.entity.Inventory;
@@ -21,29 +22,36 @@ public class InventoryService {
 	@Autowired
 	private ProductRepository productRepository; 
 	
+	@Cacheable(value = "inventory",key = "#productId")
 	public Inventory getStock(Long productId) {
 		return inventoryRepository.findByProductId(productId);
 	}
 	
-	
-	public void saveOrder(Long productId, int quantity) {
+	@CacheEvict(value = "inventory", key = "#productId")
+	public boolean saveOrder(Long productId, int quantity) {
 		Inventory inventory = inventoryRepository.findByProductId(productId);
-		if( inventory.getAvailableQuantity() >= quantity) {
+		if(inventory != null && inventory.getAvailableQuantity() >= quantity) {
 			inventory.setAvailableQuantity(inventory.getAvailableQuantity() - quantity);
 	        inventory.setReservedQuantity(inventory.getReservedQuantity() + quantity);
 	        inventoryRepository.save(inventory);
+	        return true;
 		}
+		return false;
 	}
 	
+	@Cacheable(value = "products",key = "'all'")
 	public List<Product> getAllProducts() {
 	    return productRepository.findAll();
 	}
 	
+	@CacheEvict(value = "products", key = "'all'")
 	public void addProduct(ProductRequest productRequest) {
 		
 		Product p1 = new Product();
 		p1.setProductName(productRequest.getProductName());
 		p1.setDescription(productRequest.getDescription());
+		p1.setDiscountPrice(productRequest.getDiscountPrice());
+		p1.setPrice(productRequest.getPrice());
 		p1.setCreatedOn(java.time.LocalDateTime.now());
 		p1.setUpdatedOn(java.time.LocalDateTime.now());
 		p1.setProductImage("default");
@@ -57,11 +65,12 @@ public class InventoryService {
 		inventoryRepository.save(inventory);
 	}
 	
-	public boolean tryReserveStock(Long productId,int quality) {
+	@CacheEvict(value = "inventory",key = "#productId")
+	public boolean tryReserveStock(Long productId, int quantity) {
 		Inventory inventory = inventoryRepository.findByProductId(productId);
-		if( quality <=inventory.getAvailableQuantity() ) { 
-			inventory.setAvailableQuantity(inventory.getAvailableQuantity()-quality);
-			inventory.setReservedQuantity(inventory.getReservedQuantity()+quality);
+		if(inventory != null && quantity <= inventory.getAvailableQuantity()) { 
+			inventory.setAvailableQuantity(inventory.getAvailableQuantity() - quantity);
+			inventory.setReservedQuantity(inventory.getReservedQuantity() + quantity);
 			inventoryRepository.save(inventory);
 			return true;
 		}
