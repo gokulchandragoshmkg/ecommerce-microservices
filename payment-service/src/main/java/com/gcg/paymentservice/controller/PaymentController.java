@@ -1,7 +1,11 @@
 package com.gcg.paymentservice.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,5 +26,10 @@ public class PaymentController {
     public ResponseEntity<PaymentDetail> makePayment(@RequestBody PaymentRequest request) {
     	PaymentDetail p = paymentService.processPayment(request);
         return ResponseEntity.ok(p);
+    }
+    
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<List<PaymentDetail>> getByOrder(@PathVariable Long Id) {
+        return ResponseEntity.ok(paymentService.findByOrderId(Id));
     }
 }

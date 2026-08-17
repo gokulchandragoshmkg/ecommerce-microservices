@@ -1,5 +1,7 @@
 package com.gcg.paymentservice.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class PaymentService {
 		boolean success = true; // mock payment gateway logic
 
 		PaymentDetail payment = new PaymentDetail();
+		payment.setOrderId(request.getOrderId());
 		payment.setProductId(request.getProductId());
 		payment.setPaidAmount(request.getQuantity() * 100.0f);
 		payment.setPaymentStatus(success ? "SUCCESS" : "FAILED");
@@ -47,5 +50,9 @@ public class PaymentService {
 		    }
 
 		    return saved;
+	}
+	
+	public List<PaymentDetail> findByOrderId(Long orderId){
+		 return paymentRepository.findByOrderId(orderId);
 	}
 }

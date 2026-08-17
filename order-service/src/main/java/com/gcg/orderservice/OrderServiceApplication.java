@@ -7,12 +7,14 @@ import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @RefreshScope
 @EnableDiscoveryClient
 @EnableFeignClients
+@EnableScheduling
 public class OrderServiceApplication {
 
 	public static void main(String[] args) {

@@ -18,6 +18,7 @@ public class PaymentDetail {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	private Long orderId;
 	private Long productId;
 	private Long userId;
 	private String paymentStatus;

@@ -27,7 +27,7 @@ services:
     ports:
       - "8072:8072"
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8072/actuator/health"]
+      test: ["CMD", "wget", "--no-check-certificate", "--spider", "-q", "https://localhost:8072/actuator/health"]
       interval: 5s
       timeout: 3s
       retries: 10
