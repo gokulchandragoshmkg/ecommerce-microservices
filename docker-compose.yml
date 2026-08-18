@@ -1,46 +1,7 @@
 version: '3.8'
 
 services:
-  auth-service:
-    image: ecommerce/auth-service:0.0.1-SNAPSHOT
-    ports:
-      - "8073:8073"
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8073/actuator/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-      start_period: 20s
-    environment:
-      SPRING_PROFILES_ACTIVE: "dev"
-      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
-    depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
-      gateway-service:
-        condition: service_healthy
-
-  gateway-service:
-    image: ecommerce/gateway-service:0.0.1-SNAPSHOT
-    ports:
-      - "8072:8072"
-    healthcheck:
-      test: ["CMD", "wget", "--no-check-certificate", "--spider", "-q", "https://localhost:8072/actuator/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-      start_period: 20s
-    environment:
-      SPRING_PROFILES_ACTIVE: "dev"
-      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
-    depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
-
+  # 1. CORE CONFIGURATION SERVER (First Link in the Chain)
   config-service:
     image: ecommerce/config-service:0.0.1-SNAPSHOT
     ports:
@@ -52,107 +13,25 @@ services:
       retries: 10
       start_period: 20s
 
+  # 2. SERVICE DISCOVERY (Depends on Config Server)
   eureka-service:
     image: ecommerce/eureka-service:0.0.1-SNAPSHOT
     ports:
       - "8070:8070"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8070/actuator/health"]
       interval: 5s
       timeout: 3s
       retries: 10
       start_period: 20s
-    environment:
-      SPRING_PROFILES_ACTIVE: "dev"
-      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
-    depends_on:
-      config-service:
-        condition: service_healthy
 
-  inventory-service:
-    image: ecommerce/inventory-service:0.0.1-SNAPSHOT
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_PROFILES_ACTIVE: "dev"
-      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
-    depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
-      gateway-service:
-        condition: service_healthy
-      auth-service:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-      zookeeper:
-        condition: service_healthy
-
-  order-service:
-    image: ecommerce/order-service:0.0.1-SNAPSHOT
-    ports:
-      - "8081:8081"
-    environment:
-      SPRING_PROFILES_ACTIVE: "dev"
-      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
-    depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
-      gateway-service:
-        condition: service_healthy
-      auth-service:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-      zookeeper:
-        condition: service_healthy
-
-  payment-service:
-    image: ecommerce/payment-service:0.0.1-SNAPSHOT
-    ports:
-      - "8082:8082"
-    environment:
-      SPRING_PROFILES_ACTIVE: "dev"
-      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
-    depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
-      gateway-service:
-        condition: service_healthy
-      auth-service:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-      zookeeper:
-        condition: service_healthy
-
-  notification-service:
-    image: ecommerce/notification-service:0.0.1-SNAPSHOT
-    ports:
-      - "8083:8083"
-    environment:
-      SPRING_PROFILES_ACTIVE: "dev"
-      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
-    depends_on:
-      config-service:
-        condition: service_healthy
-      eureka-service:
-        condition: service_healthy
-      gateway-service:
-        condition: service_healthy
-      auth-service:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-      zookeeper:
-        condition: service_healthy
-
+  # 3. MESSAGING INFRASTRUCTURE (Zookeeper & Kafka)
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
     environment:
@@ -170,7 +49,8 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     ports:
       - "9092:9092"
       - "9093:9093"
@@ -188,12 +68,13 @@ services:
       retries: 10
       start_period: 20s
 
+  # 4. CACHING & OBSERVABILITY INFRASTRUCTURE
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "localhost:6379", "ping"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -223,3 +104,131 @@ services:
       - "3001:3000"
     depends_on:
       - prometheus
+
+  # 5. CORE BACKEND BUSINESS SERVICES
+  auth-service:
+    image: ecommerce/auth-service:0.0.1-SNAPSHOT
+    ports:
+      - "8073:8073"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8073/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  inventory-service:
+    image: ecommerce/inventory-service:0.0.1-SNAPSHOT
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  order-service:
+    image: ecommerce/order-service:0.0.1-SNAPSHOT
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  payment-service:
+    image: ecommerce/payment-service:0.0.1-SNAPSHOT
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8082/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  notification-service:
+    image: ecommerce/notification-service:0.0.1-SNAPSHOT
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8083/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  # 6. EXTERNAL API EDGE ROUTER (Starts Last after Core Services)
+  gateway-service:
+    image: ecommerce/gateway-service:0.0.1-SNAPSHOT
+    ports:
+      - "8072:8072"
+    environment:
+      SPRING_PROFILES_ACTIVE: "dev"
+      SPRING_CONFIG_IMPORT: "configserver:http://config-service:8071"
+    depends_on:
+      config-service:
+        condition: service_healthy
+      eureka-service:
+        condition: service_healthy
+      auth-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8072/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s

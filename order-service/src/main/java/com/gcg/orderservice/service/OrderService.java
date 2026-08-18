@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gcg.orderservice.client.InventoryClient;
 import com.gcg.orderservice.client.NotificationClient;
 import com.gcg.orderservice.client.PaymentClient;
+import com.gcg.orderservice.client.PaymentDetailResponse;
 import com.gcg.orderservice.dto.OrderDetailsView;
 import com.gcg.orderservice.entity.Order;
 import com.gcg.orderservice.entity.OutboxEvent;
@@ -89,15 +90,15 @@ public class OrderService {
 		view.setQuantity(order.getQuantity());
 
 		try {
-			List<Map<String, Object>> payments = paymentClient.getPaymentsByOrder(orderId);
+			List<PaymentDetailResponse> payments = paymentClient.getPaymentsByOrder(orderId);
 			if (!payments.isEmpty()) {
-				Map<String, Object> latestPayment = payments.get(payments.size() - 1);
-				view.setPaymentStatus((String) latestPayment.get("paymentStatus"));
-				view.setPaidAmount(((Number) latestPayment.get("paidAmount")).floatValue());
-				view.setPaymentMethod((String) latestPayment.get("paymentMethod"));
+				PaymentDetailResponse latest = payments.get(payments.size() - 1);
+				view.setPaymentStatus(latest.getPaymentStatus());
+				view.setPaidAmount(latest.getPaidAmount());
+				view.setPaymentMethod(latest.getPaymentMethod());
 			}
 		} catch (Exception e) {
-			
+
 		}
 
 		try {
@@ -108,13 +109,13 @@ public class OrderService {
 				view.setLatestNotificationType((String) latest.get("type"));
 			}
 		} catch (Exception e) {
-			
+
 		}
 
 		return view;
 	}
-	
+
 	public List<Order> findAll() {
-		return orderRepository.findAll(); 
+		return orderRepository.findAll();
 	}
 }

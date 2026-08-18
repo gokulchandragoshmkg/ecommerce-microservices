@@ -10,5 +10,5 @@ import java.util.Map;
 @FeignClient(name = "payment-service")
 public interface PaymentClient {
     @GetMapping("/v1/paymentservice/order/{orderId}")
-    List<Map<String, Object>> getPaymentsByOrder(@PathVariable Long orderId);
+    List<PaymentDetailResponse> getPaymentsByOrder(@PathVariable Long orderId);
 }

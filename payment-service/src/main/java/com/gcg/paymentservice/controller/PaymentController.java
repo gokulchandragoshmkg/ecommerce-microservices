@@ -29,7 +29,7 @@ public class PaymentController {
     }
     
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<List<PaymentDetail>> getByOrder(@PathVariable Long Id) {
-        return ResponseEntity.ok(paymentService.findByOrderId(Id));
+    public ResponseEntity<List<PaymentDetail>> getByOrder(@PathVariable("orderId") Long orderId) {
+        return ResponseEntity.ok(paymentService.findByOrderId(orderId));
     }
 }
